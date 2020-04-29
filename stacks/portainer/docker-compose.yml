@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  portainer:
+    image: portainer/portainer
+    container_name: portainer
+    restart: always
+    command: -H unix:///var/run/docker.sock
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${HOME}/docker/portainer/data:/data
+      - ${HOME}/docker/shared:/shared
+    environment:
+      - TZ=${TZ}
