@@ -1,0 +1,101 @@
+version: '3'
+
+services:
+  bind:
+    image: sameersbn/bind:latest
+    container_name: bind
+    volumes:
+      - /srv/docker/bind:/data
+    ports:
+      - "53:53/udp"
+      - "53:53/tcp"
+      - "10000:10000/tcp"
+    restart: always
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - ${HOME}/docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+      - "443:443"
+
+  nzbget:
+    image: linuxserver/nzbget
+    container_name: nzbget
+    volumes:
+      - ${HOME}/docker/nzbget:/config
+      - ${HOME}/downloads:/downloads
+      - ${HOME}/downloads/incomplete:/incomplete-downloads
+      - ${HOME}/docker/shared:/shared
+    ports:
+      - "6789:6789"
+    restart: always
+    environment:
+      - TZ=${TZ}
+      - PUID=${PUID}
+      - PGID=${PGID}
+
+  radarr:
+    image: linuxserver/radarr
+    container_name: radarr
+    volumes:
+      - ${HOME}/docker/radarr:/config
+      - ${HOME}/downloads/completed:/downloads
+      - "/etc/localtime:/etc/localtime:ro"
+      - ${HOME}/docker/shared:/shared
+      - /mnt/video/Films:/films
+    ports:
+      - "7878:7878"
+    restart: always
+    environment:
+      - TZ=${TZ}
+      - PUID=${PUID}
+      - PGID=${PGID}
+
+  sonarr:
+    image: linuxserver/sonarr
+    container_name: sonarr
+    volumes:
+      - ${HOME}/docker/sonarr:/config
+      - ${HOME}/downloads/completed:/downloads
+      - "/etc/localtime:/etc/localtime:ro"
+      - ${HOME}/docker/shared:/shared
+      - "/mnt/video/TV\ Shows:/tv"
+    ports:
+      - "8989:8989"
+    restart: always
+    environment:
+      - TZ=${TZ}
+      - PUID=${PUID}
+      - PGID=${PGID}
+
+  hydra:
+    image: linuxserver/hydra
+    container_name: hydra
+    volumes:
+      - ${HOME}/docker/hydra:/config
+      - ${HOME}/downloads:/downloads
+      - ${HOME}/docker/shared:/shared
+    ports:
+      - "5075:5075"
+    restart: always
+    environment:
+      - TZ=${TZ}
+      - PUID=${PUID}
+      - PGID=${PGID}
+
+  ombi:
+    image: linuxserver/ombi
+    container_name: ombi
+    volumes:
+      - ${HOME}/docker/ombi:/config
+      - ${HOME}/docker/shared:/shared
+    ports:
+      - "3579:3579"
+    restart: always
+    environment:
+      - TZ=${TZ}
+      - PUID=${PUID}
+      - PGID=${PGID}
